@@ -93,7 +93,7 @@ namespace VacancyParcer.ViewModels
 
         public ActionCommand AssembleObjectSalaryCommand => new ActionCommand(x => AssembleObjectSalary(),x=> CanAssembleAllVacancy());
         public ActionCommand GetCountCommand => new ActionCommand(x => GetCountOfPage());
-        public ActionCommand GetEveryBobyOfPage_Select_TaskCommand => new ActionCommand(async x => await GetEveryBobyOfPage_Select_Task(webParser_Proglib_IO));
+     
 
         #endregion
 
@@ -120,29 +120,13 @@ namespace VacancyParcer.ViewModels
 
 
 
-        /* private async Task GetEveryBobyOfPage_Select_Task_Parallel(WebParser_Proglib_IO webParser_Proglib_IO, int a)
+         private async Task GetEveryBobyOfPage_Select_Task_Parallel(WebParser_Proglib_IO webParser_Proglib_IO)
          {
-             List<string> pages = new List<string>();
-             TmpBody = string.Empty;
-
-             for (int i = 1; i <= a; i++)
-             {
-                 pages.Add($"https://proglib.io/vacancies/all?workType=all&workPlace=all&experience=&salaryFrom=&page={i.ToString()}");
-             }
-
-             await Parallel.ForEachAsync(pages, async () =>
-             {
-                 string pageContent = await webParser_Proglib_IO.GetBodyOfPage(page);
-                 lock (TmpBody)
-                 {
-                     TmpBody += " " + pageContent;
-                 }
-             });
-
-             // MessageBox.Show("Готово");
+                   
+             
          }
 
- */
+
 
 
 
@@ -158,88 +142,31 @@ namespace VacancyParcer.ViewModels
             await GetBobyOfFirstPage(webParser_Proglib_IO);
             GetCountOfPage();
 
-          //  Task task2 = Task.Run(async () =>
-          //  {
-                await GetEveryBobyOfPage_Auto_Select_Task(webParser_Proglib_IO);
-                AllreadyLoad = true;
-
-          //  });
-                       
-          //  await task2;
-        }
-
-
-
-
-
-       private async Task GetEveryBobyOfPage_Select_Task(WebParser_Proglib_IO webParser_Proglib_IO)
-
-        {
-                      
-            List<string> pages = new List<string>();
-            TmpBody = string.Empty;
-                        
-              
-                for (int i = 1; i <= 10; i++)
-                {
-                    pages.Add($"https://proglib.io/vacancies/all?workType=all&workPlace=all&experience=&salaryFrom=&page={i.ToString()}");
-                }
-
-                var tasks = pages.Select(p => webParser_Proglib_IO.GetBodyOfPage(p));
-                pagesContent = await Task.WhenAll(tasks);
-
-                foreach (string str in pagesContent)
-                {
-                    TmpBody += " " + str;
-                }
-
-                pages.Clear();
-
-                for (int i = 11; i <= 20; i++)
-                {
-                    pages.Add($"https://proglib.io/vacancies/all?workType=all&workPlace=all&experience=&salaryFrom=&page={i.ToString()}");
-                }
-
-                tasks = pages.Select(p => webParser_Proglib_IO.GetBodyOfPage(p));
-                pagesContent = await Task.WhenAll(tasks);
-
-                foreach (string str in pagesContent)
-                {
-                    TmpBody += " " + str;
-                }
-
-                pages.Clear();
-
-                for (int i = 21; i <= 22; i++)
-                {
-                    pages.Add($"https://proglib.io/vacancies/all?workType=all&workPlace=all&experience=&salaryFrom=&page={i.ToString()}");
-                }
-
-                tasks = pages.Select(p => webParser_Proglib_IO.GetBodyOfPage(p));
-                pagesContent = await Task.WhenAll(tasks);
-
-                foreach (string str in pagesContent)
-                {
-                    TmpBody += " " + str;
-                }
-        //    MessageBox.Show("Готово");
+         
+           await GetEveryBobyOfPage_Auto_Select_Task(webParser_Proglib_IO);
+           AllreadyLoad = true;
 
         }
 
+
+
+
+
+   
 
        private async Task GetEveryBobyOfPage_Auto_Select_Task(WebParser_Proglib_IO webParser_Proglib_IO)
 
         {
-           
            List<string> pages = new List<string>();
 
-            MessageBox.Show(a.ToString()); // отладка
+           
             int x = 1;
             int y = x + 9;
             int q = (a / 10);
             IEnumerable<Task<string?>?> tasks;
-
+           
             TmpBody = string.Empty;
+            stopwatch.Start();
             for (int z = 0; z < q; z++)
 
             {
@@ -268,11 +195,12 @@ namespace VacancyParcer.ViewModels
             }
             tasks = pages.Select(p => webParser_Proglib_IO.GetBodyOfPage(p));
             pagesContent = await Task.WhenAll(tasks);
-
+            stopwatch.Stop();
             foreach (string str in pagesContent)
             {
                 TmpBody += " " + str;
             }
+            MessageBox.Show($"Время выполнения: {stopwatch.ElapsedMilliseconds} мс");
  
         }
 
@@ -281,7 +209,7 @@ namespace VacancyParcer.ViewModels
         private void GetCountOfPage()
         {
             a = webParser_Proglib_IO.GetCountOfPages(TmpBody);
-           // MessageBox.Show(a.ToString());
+          
         }
 
 
@@ -309,44 +237,11 @@ namespace VacancyParcer.ViewModels
 
             }
 
-                               /*  foreach (Vacancy v in Vacancies)
-              {
-                  MessageBox.Show(v.Name);
-
-              }
-  */
-
         }
 
 
 
-        private void AssembleObjectsAllVacancy()
-        {
-
-            ListOfNameOfVacansy = webParser_Proglib_IO.EasyGetNameofVacancy(TmpBody);
-            List<string> LincOfVacancy = webParser_Proglib_IO.EasyGetLincOfVacancy(TmpBody);
-            List<DateTime> DatesOfVacancy = webParser_Proglib_IO.EasyGetPublicationDateOfVacancy(TmpBody);
-
-
-
-            Vacancies.Clear();
-            foreach (string nameOfVacancy in ListOfNameOfVacansy)
-            {
-                Vacancy vacancy = new Vacancy { Name = nameOfVacancy };
-                Vacancies.Add(vacancy);
-
-            }
-
-            for (int i = 0; i < Vacancies.Count(); i++)
-            {
-                Vacancies[i].WebLinq = LincOfVacancy[i];
-                Vacancies[i].DateOfPublication = DatesOfVacancy[i];
-
-            }
-
-
-
-        }
+      
 
 
         private bool CanAssembleAllVacancy()
@@ -354,7 +249,6 @@ namespace VacancyParcer.ViewModels
 
           return AllreadyLoad;
         }
-
 
 
 
